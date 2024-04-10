@@ -17,14 +17,25 @@
  */
 
 // Створюємо об'єкт Book
+let book = {
+  title: "Загальна Книга",
+  author: "Аномім",
+  pages: 0,
+  read() {
+    console.log(`Ви читаєте ${this.title} від ${this.author}`);
+  },
+};
 
 console.log("Завдання: 1 ==============================");
 
 // Виводимо в консоль Об'єкт: Book
+console.log(book);
 
 // Виводимо в консоль прототип Об'єкту: Book
+console.log(Object.getPrototypeOf(book));
 
 // Викликаємо функцію read об'єкту Book
+book.read();
 
 // 2. Наслідування від базового об'єкту Book
 
@@ -38,14 +49,17 @@ console.log("Завдання: 1 ==============================");
  */
 
 // Створюємо об'єкт Novel, наслідуємо властивості і функції від об'єкта Book
-
+const novel = Object.create(book);
 // Додаємо властивість genre
+novel.genre = "Новела";
 
 console.log("Завдання: 2 ==============================");
 
 // Виводимо в консоль Об'єкт: Novel
+console.log(novel);
 
 // Виводимо в консоль прототип Об'єкту: Novel
+console.log(Object.getPrototypeOf(novel));
 
 // 3. Створення нового об'єкту та зміна його прототипу
 
@@ -61,13 +75,18 @@ console.log("Завдання: 2 ==============================");
  */
 
 // Створюємо об'єкт Biography
-
+const biography = {
+  title: "Загальна Біографія",
+  author: "Біограф",
+  pages: 200,
+};
 // Змінемо прототип об'єкта Biography на Novel
-
+Object.setPrototypeOf(biography, novel);
 console.log("Завдання: 3 ==============================");
 // Виводимо в консоль Об'єкт: Biography
-
+console.log(biography);
 // Перевіримо чи являється Novel прототипом Biography та виведемо в консоль
+console.log(novel.isPrototypeOf(biography));
 
 // 4. Інкапсуляція властивості та додання властивості
 /*
@@ -77,14 +96,32 @@ console.log("Завдання: 3 ==============================");
  */
 
 // Створюємо ScienceBook, наслідуємо властивості і функції від об'єкта Book
-
+const scienceBook = Object.create(book);
+scienceBook.title = "Фізика 101";
+scienceBook.author = "Альберт Ейнштейн";
 // Додаємо властивість 'info' за допомогою Object.defineProperty
+Object.defineProperty(scienceBook, "_info", {
+  value: "написана в 1915 році",
+  writtable: false,
+  configurable: false,
+});
 // Зробимо щоб 'info' не можно було видалити або змінити, перевіримо і спробуємо присвоїти ій будь яке значення (це потрібно робити ззовні defineProperty),
 // Отримаємо помилку Cannot assign to read only property 'info' of object '#<Object>'
-
+try {
+  scienceBook.info = "Нове значення";
+} catch (error) {
+  console.log(error.message);
+}
 // Далі створюємо сетер який присвоє властивості info значення яке отримує при виклику, помилку більше не отримуємо але при спробі вивести значення info отримуємо undefined
-
-// Створимо гетер який буде нам повертати рядок: Про книгу <title>: <info>
+Object.defineProperty(scienceBook, "info", {
+  set(value) {
+    this._info = value;
+  },
+  // Створимо гетер який буде нам повертати рядок: Про книгу <title>: <info>
+  get() {
+    return `Про книгу ${this.title}: ${this._info}`;
+  },
+});
 // тепер все виводить коректно
 
 // Заповнюємо об'єкт
@@ -96,9 +133,9 @@ console.log("Завдання: 3 ==============================");
 
 console.log("Завдання: 4 ==============================");
 // Виводимо в консоль властивість info
-
+console.log(scienceBook.info);
 // Виводимо в консоль налаштування властивости info
-
+console.log(Object.getOwnPropertyDescriptor(scienceBook, "info"));
 // 5. Поліморфізм: створення нового об'єкта та перевизначення його методу
 /*
  * Об'єкт: Textbook
@@ -108,9 +145,13 @@ console.log("Завдання: 4 ==============================");
  */
 
 //Створюємо Textbook та наслідуємо властивості з ScienceBook
-
+const textbook = Object.create(scienceBook);
+textbook.title = "Фізика у Вищій Школі";
+textbook.author = "Дж. Д. Джонс";
 // Перевизначаємо метод read(), відповідно з дописом вище
-
+textbook.read = function () {
+  console.log(`Ви читаєте підручник "${this.title}" від "${this.author}"`);
+};
 // Встановлюємо значення для Textbook
 // | Властивість | Значення                   |
 // |-------------|----------------------------|
@@ -119,7 +160,7 @@ console.log("Завдання: 4 ==============================");
 
 console.log("Завдання: 5 ==============================");
 // Викликаємо функцію read об'єкту Textbook
-
+textbook.read();
 // 6. Абстракція: створення об'єкта з загальними властивостями
 /*
  * Об'єкт: Media
@@ -138,7 +179,15 @@ console.log("Завдання: 5 ==============================");
  */
 
 // Створюємо об'єкт Media
-
+const media = {
+  format: "Загальний Формат",
+  length: 0,
+  play() {
+    console.log(
+      `Зараз відтворюється медіа у форматі ${this.format} з тривалістю ${this.length} секунд`
+    );
+  },
+};
 /*
  * Об'єкт: Song
  * Властивості та функції наслідуються від об'єкта Media
@@ -146,6 +195,9 @@ console.log("Завдання: 5 ==============================");
  */
 
 // Створюємо об'єкт Song, наслідуємо властивості і функції від об'єкта Media
+const song = Object.create(media);
+song.artist = "Загальний Виконавець";
+song.title = "Загальна Пісня";
 
 // Встановлюємо додаткові властивості
 // | Властивість | Значення               |
@@ -155,3 +207,4 @@ console.log("Завдання: 5 ==============================");
 
 console.log("Завдання: 6 ==============================");
 // Викликаємо функцію play об'єкту Song
+return song.play();
